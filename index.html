@@ -148,7 +148,12 @@ footer a{color:var(--gold2);margin:0 10px;text-decoration:none;font-weight:600}
 <option>May your Christmas be full of light, laughter, and the people you love most. Merry Christmas!</option>
 <option>Wishing you warm cocoa, bright lights, and a brand new year full of hope. Merry Christmas!</option>
 <option>May Santa bring you everything you wished for — and a little extra joy too. Merry Christmas!</option>
+<option value="__custom__">✍️ Apna message khud likhen (Custom)</option>
 </select>
+<div id="customMsgBox" style="display:none;margin-top:10px">
+<label for="customMsg" style="margin-top:0">Apna message likhen</label>
+<textarea id="customMsg" rows="3" maxlength="280" placeholder="e.g. Merry Christmas! Is saal tumhari har dua poori ho..." style="width:100%;padding:13px 14px;border:1.5px solid #d8ddd5;border-radius:12px;font-size:16px;font-family:inherit;resize:vertical"></textarea>
+</div>
 <div style="margin-top:18px">
 <button class="btn" onclick="downloadCard()">⬇ Download Card (PNG)</button>
 <button class="btn wa" onclick="shareCardWA()">💬 Share on WhatsApp</button>
@@ -243,20 +248,29 @@ tick(); setInterval(tick, 1000);
 })();
 // Card maker
 let theme = 'classic';
-const toEl = document.getElementById('toName'), fromEl = document.getElementById('fromName'), msgEl = document.getElementById('msg');
+const toEl = document.getElementById('toName'), fromEl = document.getElementById('fromName'), msgEl = document.getElementById('msg'), customEl = document.getElementById('customMsg');
+function currentMsg(){
+  if (msgEl.value === '__custom__') return customEl.value.trim() || 'Merry Christmas! May this season bring you endless joy.';
+  return msgEl.value;
+}
 function sync(){
   document.getElementById('pvTo').textContent = toEl.value.trim() || 'My Dear Friend';
-  document.getElementById('pvMsg').textContent = msgEl.value;
+  document.getElementById('pvMsg').textContent = currentMsg();
   const f = fromEl.value.trim();
   document.getElementById('pvFrom').textContent = f ? 'With love, ' + f : 'With love & warm wishes';
   document.getElementById('previewCard').className = 'card ' + theme;
 }
-toEl.addEventListener('input', sync); fromEl.addEventListener('input', sync); msgEl.addEventListener('change', sync);
+toEl.addEventListener('input', sync); fromEl.addEventListener('input', sync); customEl.addEventListener('input', sync);
+msgEl.addEventListener('change', ()=>{
+  document.getElementById('customMsgBox').style.display = (msgEl.value === '__custom__') ? 'block' : 'none';
+  if (msgEl.value === '__custom__') customEl.focus();
+  sync();
+});
 document.querySelectorAll('.themes button').forEach(b=>b.addEventListener('click', ()=>{
   document.querySelectorAll('.themes button').forEach(o=>o.classList.remove('on')); b.classList.add('on'); theme = b.dataset.theme; sync();
 }));
 function wishText(){
-  return '🎄 Merry Christmas, ' + (toEl.value.trim() || 'my friend') + '! ' + msgEl.value + (fromEl.value.trim() ? ' — ' + fromEl.value.trim() : '') + ' 💫 Made on Merry Wish Hub';
+  return '🎄 Merry Christmas, ' + (toEl.value.trim() || 'my friend') + '! ' + currentMsg() + (fromEl.value.trim() ? ' — ' + fromEl.value.trim() : '') + ' 💫 Made on Merry Wish Hub';
 }
 function copyWish(){
   navigator.clipboard.writeText(wishText()).then(()=>{ document.getElementById('copyNote').textContent = '✓ Wish copied — paste it anywhere!'; });
@@ -278,7 +292,7 @@ function downloadCard(){
   g.fillText('🎄  MERRY CHRISTMAS  🎄', 540, 210);
   g.fillStyle = '#fff'; g.font = 'bold 72px Georgia, serif';
   wrap(g, toEl.value.trim() || 'My Dear Friend', 540, 360, 860, 84);
-  g.font = '32px sans-serif'; wrap(g, msgEl.value, 540, 560, 820, 46);
+  g.font = '32px sans-serif'; wrap(g, currentMsg(), 540, 560, 820, 46);
   const f = fromEl.value.trim(); g.fillStyle = '#f5d78e'; g.font = 'bold 30px sans-serif';
   g.fillText(f ? 'With love, ' + f : 'With love & warm wishes', 540, 940);
   g.fillStyle = '#f8f4e8'; g.font = '24px sans-serif'; g.fillText('Merry Wish Hub', 540, 1000);
