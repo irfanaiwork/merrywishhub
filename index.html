@@ -186,35 +186,35 @@ footer a{color:var(--gold2);margin:0 10px;text-decoration:none;font-weight:600}
 <button type="button" data-theme="winter">❄️ Winter Blue</button>
 <button type="button" data-theme="pine">🌲 Pine Night</button>
 <button type="button" data-theme="vintage">🕯️ Vintage Cream</button>
-<button type="button" data-theme="starburst">⭐ Starburst Photo (aap wali style)</button>
+<button type="button" data-theme="starburst">⭐ Starburst Photo</button>
 <button type="button" data-theme="snowglobe">🔮 Snow Globe Photo</button>
 </div>
-<p class="note" style="margin:6px 0 0">Starburst aur Snow Globe templates photo ke sath sab se ache lagte hain — photo upload karen to photo star ya gol shape mein aayegi.</p>
+<p class="note" style="margin:6px 0 0">Starburst and Snow Globe templates look best with a photo — upload one and it will appear in a star or circle shape.</p>
 <label for="msg">Message</label>
 <select id="msg">
 <option>May your Christmas be full of light, laughter, and the people you love most. Merry Christmas!</option>
 <option>Wishing you warm cocoa, bright lights, and a brand new year full of hope. Merry Christmas!</option>
 <option>May Santa bring you everything you wished for — and a little extra joy too. Merry Christmas!</option>
-<option value="__custom__">✍️ Apna message khud likhen (Custom)</option>
+<option value="__custom__">✍️ Write your own message (Custom)</option>
 </select>
 <div id="customMsgBox" style="display:none;margin-top:10px">
-<label for="customMsg" style="margin-top:0">Apna message likhen</label>
-<textarea id="customMsg" rows="3" maxlength="280" placeholder="e.g. Merry Christmas! Is saal tumhari har dua poori ho..." style="width:100%;padding:13px 14px;border:1.5px solid #d8ddd5;border-radius:12px;font-size:16px;font-family:inherit;resize:vertical"></textarea>
+<label for="customMsg" style="margin-top:0">Write your own message</label>
+<textarea id="customMsg" rows="3" maxlength="280" placeholder="e.g. Merry Christmas! May all your wishes come true this year..." style="width:100%;padding:13px 14px;border:1.5px solid #d8ddd5;border-radius:12px;font-size:16px;font-family:inherit;resize:vertical"></textarea>
 </div>
 <div class="imgctl">
-<label style="margin-top:0">🖼️ Optional: Apni photo card par add karen (zaroori nahi)</label>
+<label style="margin-top:0">🖼️ Optional: Add your own photo to the card (not required)</label>
 <input type="file" id="imgFile" accept="image/*" style="width:100%;margin-top:6px">
 <div id="imgOpts" style="display:none">
-<label>Photo kahan ho?</label>
+<label>Where should the photo go?</label>
 <select id="imgPos" style="width:100%;padding:12px;border:1.5px solid #d8ddd5;border-radius:12px;font-size:15px">
-<option value="top">Card ke upar (photo ke tor par)</option>
-<option value="center">Card ke beech mein (photo ke tor par)</option>
-<option value="background">Poore card ka background</option>
+<option value="top">Top of the card (as a photo)</option>
+<option value="center">Middle of the card (as a photo)</option>
+<option value="background">Full card background</option>
 </select>
-<label>Photo ka size: <span id="sizeVal">70%</span></label>
+<label>Photo size: <span id="sizeVal">70%</span></label>
 <input type="range" id="imgSize" min="30" max="100" value="70">
-<p class="note" style="margin:6px 0 0">Background mode mein photo ke upar halka dark shade aayega taa ke text saaf parha jaye. Photo na lagayen to card wese hi banega.</p>
-<button type="button" class="mini" onclick="removeImage()" style="margin-top:10px">✕ Photo hata den</button>
+<p class="note" style="margin:6px 0 0">In background mode, a light dark shade appears over the photo so the text stays easy to read. If you skip the photo, the card works just as normal.</p>
+<button type="button" class="mini" onclick="removeImage()" style="margin-top:10px">✕ Remove photo</button>
 </div>
 </div>
 <div style="margin-top:18px">
@@ -258,9 +258,6 @@ footer a{color:var(--gold2);margin:0 10px;text-decoration:none;font-weight:600}
 <h2>Christmas Wishes to Share</h2>
 <p class="lead">Tap Copy, or send straight to WhatsApp. Every wish opens ready to forward — that's how a wish travels through a whole group.</p>
 <div class="grid" id="wishGrid"></div>
-<h3 style="font-family:Fraunces,serif;font-size:24px;margin-top:34px">Roman Urdu Wishes</h3>
-<p class="lead">WhatsApp groups ke liye — ye wishes Roman Urdu mein hain.</p>
-<div class="grid" id="wishGridUrdu"></div>
 </section>
 
 <section id="gifts">
@@ -481,16 +478,10 @@ const WISHES = [
   'Christmas is better because of people like you. Thank you for being in my life. Merry Christmas!',
   'May the new year bring you everything this Christmas promised. Merry Christmas and Happy New Year!'
 ];
-const WISHES_UR = [
-  'Merry Christmas! Allah aap ko khushiyan, sehat aur kamyabi de. Christmas Mubarak!',
-  'Christmas Mubarak! Aap ke ghar mein khushiyan, mohabbat aur sukoon hamesha rahe.',
-  'Dua hai ke ye Christmas aap ki zindagi mein nayi roshni aur nayi umeed le kar aaye. Merry Christmas!',
-  'Merry Christmas! Aap aur aap ki family hamesha khush aur salamat rahen.'
-];
 function wishCards(list, elId){
   document.getElementById(elId).innerHTML = list.map(w=>'<div class="wish"><p>🎄 '+w+'</p><div class="row"><button class="mini" onclick="navigator.clipboard.writeText(\''+w.replace(/'/g,"\\'")+'\');this.textContent=\'✓ Copied\';">📋 Copy</button><a class="mini wa" target="_blank" href="https://wa.me/?text='+encodeURIComponent(w + ' — via Merry Wish Hub')+'">💬 WhatsApp</a></div></div>').join('');
 }
-wishCards(WISHES, 'wishGrid'); wishCards(WISHES_UR, 'wishGridUrdu');
+wishCards(WISHES, 'wishGrid');
 </script>
 <!-- ADSTERRA: this site's own popunder + social bar scripts go here (after approval). Do not paste Soulping's codes. -->
 </body>
