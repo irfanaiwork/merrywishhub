@@ -410,19 +410,10 @@ function clickAd(i){
     document.getElementById('gateDest').classList.add('show');
     return;
   }
-  let t = 2;
-  document.getElementById('gateTimer').textContent = 'Next ad unlocks in ' + t + ' seconds...';
-  gateTimerId = setInterval(()=>{
-    t--;
-    if (t <= 0){
-      clearInterval(gateTimerId);
-      document.getElementById('gateTimer').textContent = 'Watch Ad ' + (gateDone + 1) + ' is now unlocked!';
-      const nb = document.getElementById('adbtn' + (gateDone + 1));
-      nb.disabled = false; nb.querySelector('.adstate').textContent = 'Click to watch';
-    } else {
-      document.getElementById('gateTimer').textContent = 'Next ad unlocks in ' + t + ' seconds...';
-    }
-  }, 1000);
+  // No waiting time: the next ad unlocks immediately after the previous one is clicked
+  document.getElementById('gateTimer').textContent = 'Watch Ad ' + (gateDone + 1) + ' is now unlocked!';
+  const nb = document.getElementById('adbtn' + (gateDone + 1));
+  nb.disabled = false; nb.querySelector('.adstate').textContent = 'Click to watch';
 }
 function runPendingAction(){
   document.getElementById('gateOverlay').classList.remove('open');
@@ -560,7 +551,7 @@ wishCards(WISHES, 'wishGrid');
 <button class="close" onclick="closeGate()" aria-label="Close">×</button>
 <div style="font-size:36px">⏳</div>
 <h3>First, Test Your Patience!</h3>
-<p>Watch 5 quick ads to unlock your card. Each ad opens in a new tab — after each one, wait 2 seconds for the next ad to unlock.</p>
+<p>Watch 5 quick ads to unlock your card. Each ad opens in a new tab — the next ad unlocks right away, with no waiting time.</p>
 <div id="gateAds"></div>
 <div class="timer" id="gateTimer"></div>
 <button class="btn gold dest" id="gateDest" onclick="runPendingAction()">Continue →</button>
