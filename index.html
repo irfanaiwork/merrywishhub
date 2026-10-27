@@ -73,6 +73,17 @@ input[type=text],select{width:100%;padding:13px 14px;border:1.5px solid #d8ddd5;
 .card p{font-size:17px;line-height:1.65;margin:8px 0;font-style:italic}
 .card .from{margin-top:18px;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#f5d78e}
 .card .rule{width:64px;height:2px;background:#e8b54a;margin:14px auto 4px}
+.card.vintage{background:radial-gradient(500px 260px at 50% 0%,rgba(192,57,43,.12),transparent 60%),linear-gradient(160deg,#fdf8ea,#f3e6c8 60%,#ead9ae);color:#7a1010}
+.card.vintage .from{color:#8a6a1f}
+.card.vintage h3{text-shadow:none}
+.card .seal{width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f5d78e,#c9a227);color:#7a1010;font-size:24px;line-height:52px;margin:16px auto 0;box-shadow:0 4px 10px rgba(0,0,0,.3);border:2px solid rgba(255,255,255,.5)}
+.cardimg{max-width:100%;border-radius:10px;border:3px solid rgba(245,215,142,.9);box-shadow:0 8px 18px rgba(0,0,0,.35);margin:12px auto;display:none}
+.cardimg.show{display:block}
+.cardbg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55;display:none}
+.cardbg.show{display:block}
+.card>*:not(.cardbg){position:relative}
+input[type=range]{width:100%}
+.imgctl{background:#fdf8ea;border:1.5px solid #efe3c8;border-radius:14px;padding:14px;margin-top:14px}
 /* Quiz */
 .qbox{background:#0c231c;color:#fff;border-radius:22px;padding:26px}
 .qbox .bar{height:8px;background:rgba(255,255,255,.18);border-radius:99px;overflow:hidden}
@@ -169,6 +180,7 @@ footer a{color:var(--gold2);margin:0 10px;text-decoration:none;font-weight:600}
 <button type="button" class="on" data-theme="classic">❤️ Classic Red &amp; Gold</button>
 <button type="button" data-theme="winter">❄️ Winter Blue</button>
 <button type="button" data-theme="pine">🌲 Pine Night</button>
+<button type="button" data-theme="vintage">🕯️ Vintage Cream</button>
 </div>
 <label for="msg">Message</label>
 <select id="msg">
@@ -181,6 +193,22 @@ footer a{color:var(--gold2);margin:0 10px;text-decoration:none;font-weight:600}
 <label for="customMsg" style="margin-top:0">Apna message likhen</label>
 <textarea id="customMsg" rows="3" maxlength="280" placeholder="e.g. Merry Christmas! Is saal tumhari har dua poori ho..." style="width:100%;padding:13px 14px;border:1.5px solid #d8ddd5;border-radius:12px;font-size:16px;font-family:inherit;resize:vertical"></textarea>
 </div>
+<div class="imgctl">
+<label style="margin-top:0">🖼️ Optional: Apni photo card par add karen (zaroori nahi)</label>
+<input type="file" id="imgFile" accept="image/*" style="width:100%;margin-top:6px">
+<div id="imgOpts" style="display:none">
+<label>Photo kahan ho?</label>
+<select id="imgPos" style="width:100%;padding:12px;border:1.5px solid #d8ddd5;border-radius:12px;font-size:15px">
+<option value="top">Card ke upar (photo ke tor par)</option>
+<option value="center">Card ke beech mein (photo ke tor par)</option>
+<option value="background">Poore card ka background</option>
+</select>
+<label>Photo ka size: <span id="sizeVal">70%</span></label>
+<input type="range" id="imgSize" min="30" max="100" value="70">
+<p class="note" style="margin:6px 0 0">Background mode mein photo ke upar halka dark shade aayega taa ke text saaf parha jaye. Photo na lagayen to card wese hi banega.</p>
+<button type="button" class="mini" onclick="removeImage()" style="margin-top:10px">✕ Photo hata den</button>
+</div>
+</div>
 <div style="margin-top:18px">
 <button class="btn" onclick="downloadCard()">⬇ Download Card (PNG)</button>
 <button class="btn wa" onclick="shareCardWA()">💬 Share on WhatsApp</button>
@@ -189,13 +217,17 @@ footer a{color:var(--gold2);margin:0 10px;text-decoration:none;font-weight:600}
 <p class="note" id="copyNote"></p>
 </div>
 <div class="card classic" id="previewCard">
+<img id="cardBgImg" class="cardbg" alt="">
+<div id="cardBgShade" style="position:absolute;inset:0;background:rgba(0,0,0,.35);display:none"></div>
 <div class="tree">🎄</div>
 <div style="letter-spacing:4px;font-size:12px;font-weight:800;color:#f5d78e">✦ MERRY CHRISTMAS ✦</div>
 <h3 id="pvTo">My Dear Friend</h3>
 <div class="rule"></div>
+<img id="cardImg" class="cardimg" alt="">
 <p id="pvMsg">May your Christmas be full of light, laughter, and the people you love most. Merry Christmas!</p>
 <div style="font-size:26px">✦ &nbsp; 🎁 &nbsp; ✦</div>
 <div class="from" id="pvFrom">With love &amp; warm wishes</div>
+<div class="seal">★</div>
 </div>
 </div>
 </section>
@@ -296,6 +328,35 @@ msgEl.addEventListener('change', ()=>{
 document.querySelectorAll('.themes button').forEach(b=>b.addEventListener('click', ()=>{
   document.querySelectorAll('.themes button').forEach(o=>o.classList.remove('on')); b.classList.add('on'); theme = b.dataset.theme; sync();
 }));
+// Optional card photo (upload, size, position, background mode)
+let cardPhoto = null, photoObj = null;
+const imgFile = document.getElementById('imgFile'), imgPos = document.getElementById('imgPos'), imgSize = document.getElementById('imgSize');
+function applyPhoto(){
+  const img = document.getElementById('cardImg'), bg = document.getElementById('cardBgImg');
+  if (!cardPhoto){ img.classList.remove('show'); bg.classList.remove('show'); document.getElementById('cardBgShade').style.display = 'none'; return; }
+  if (imgPos.value === 'background'){
+    img.classList.remove('show'); bg.src = cardPhoto; bg.classList.add('show'); document.getElementById('cardBgShade').style.display = 'block';
+  } else {
+    bg.classList.remove('show'); document.getElementById('cardBgShade').style.display = 'none'; img.src = cardPhoto; img.style.width = imgSize.value + '%'; img.classList.add('show');
+    document.getElementById('sizeVal').textContent = imgSize.value + '%';
+    const card = document.getElementById('previewCard'), h3 = document.getElementById('pvTo'), msg = document.getElementById('pvMsg');
+    if (imgPos.value === 'top') card.insertBefore(img, h3);
+    else card.insertBefore(img, msg);
+  }
+}
+imgFile.addEventListener('change', ()=>{
+  const f = imgFile.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{ cardPhoto = r.result; photoObj = new Image(); photoObj.src = cardPhoto;
+    document.getElementById('imgOpts').style.display = 'block'; applyPhoto(); };
+  r.readAsDataURL(f);
+});
+imgPos.addEventListener('change', applyPhoto);
+imgSize.addEventListener('input', applyPhoto);
+function removeImage(){
+  cardPhoto = null; photoObj = null; imgFile.value = '';
+  document.getElementById('imgOpts').style.display = 'none'; applyPhoto();
+}
 function wishText(){
   return '🎄 Merry Christmas, ' + (toEl.value.trim() || 'my friend') + '! ' + currentMsg() + (fromEl.value.trim() ? ' — ' + fromEl.value.trim() : '') + ' 💫 Made on Merry Wish Hub';
 }
@@ -306,30 +367,53 @@ function shareCardWA(){
   window.open('https://wa.me/?text=' + encodeURIComponent(wishText() + ' https://merrywishhub.vercel.app'), '_blank');
 }
 function downloadCard(){
-  const cv = document.createElement('canvas'); cv.width = 1080; cv.height = 1080;
-  const g = cv.getContext('2d');
-  const grad = g.createLinearGradient(0,0,1080,1080);
-  if(theme==='winter'){ grad.addColorStop(0,'#123a5c'); grad.addColorStop(1,'#0e2c44'); }
-  else if(theme==='pine'){ grad.addColorStop(0,'#0c231c'); grad.addColorStop(1,'#1e5a41'); }
-  else { grad.addColorStop(0,'#8e1f16'); grad.addColorStop(1,'#c0392b'); }
-  g.fillStyle = grad; g.fillRect(0,0,1080,1080);
-  g.strokeStyle = '#e8b54a'; g.lineWidth = 6; g.strokeRect(36,36,1008,1008);
-  g.lineWidth = 2; g.strokeRect(58,58,964,964);
-  g.fillStyle = '#e8b54a'; g.font = 'bold 34px sans-serif'; g.textAlign = 'center';
-  g.fillText('🎄  MERRY CHRISTMAS  🎄', 540, 210);
-  g.fillStyle = '#fff'; g.font = 'bold 72px Georgia, serif';
-  wrap(g, toEl.value.trim() || 'My Dear Friend', 540, 360, 860, 84);
-  g.font = '32px sans-serif'; wrap(g, currentMsg(), 540, 560, 820, 46);
-  const f = fromEl.value.trim(); g.fillStyle = '#f5d78e'; g.font = 'bold 30px sans-serif';
-  g.fillText(f ? 'With love, ' + f : 'With love & warm wishes', 540, 940);
-  g.fillStyle = '#f8f4e8'; g.font = '24px sans-serif'; g.fillText('Merry Wish Hub', 540, 1000);
-  const a = document.createElement('a'); a.download = 'merry-christmas-card.png'; a.href = cv.toDataURL('image/png'); a.click();
+  const doDraw = ()=>{
+    const cv = document.createElement('canvas'); cv.width = 1080; cv.height = 1080;
+    const g = cv.getContext('2d');
+    const grad = g.createLinearGradient(0,0,1080,1080);
+    if(theme==='winter'){ grad.addColorStop(0,'#123a5c'); grad.addColorStop(1,'#0e2c44'); }
+    else if(theme==='pine'){ grad.addColorStop(0,'#0c231c'); grad.addColorStop(1,'#1e5a41'); }
+    else if(theme==='vintage'){ grad.addColorStop(0,'#fdf8ea'); grad.addColorStop(1,'#ead9ae'); }
+    else { grad.addColorStop(0,'#8e1f16'); grad.addColorStop(1,'#c0392b'); }
+    g.fillStyle = grad; g.fillRect(0,0,1080,1080);
+    const main = (theme==='vintage') ? '#7a1010' : '#ffffff';
+    const gold = (theme==='vintage') ? '#8a6a1f' : '#e8b54a';
+    // Photo as background: cover + dark shade so text stays readable
+    if (cardPhoto && photoObj && photoObj.complete && photoObj.naturalWidth && imgPos.value === 'background'){
+      const s = Math.max(1080/photoObj.naturalWidth, 1080/photoObj.naturalHeight);
+      const w = photoObj.naturalWidth*s, h = photoObj.naturalHeight*s;
+      g.drawImage(photoObj, (1080-w)/2, (1080-h)/2, w, h);
+      g.fillStyle = 'rgba(0,0,0,0.45)'; g.fillRect(0,0,1080,1080);
+    }
+    g.strokeStyle = gold; g.lineWidth = 6; g.strokeRect(36,36,1008,1008);
+    g.lineWidth = 2; g.strokeRect(58,58,964,964);
+    g.fillStyle = gold; g.font = 'bold 34px sans-serif'; g.textAlign = 'center';
+    g.fillText('🎄  MERRY CHRISTMAS  🎄', 540, 170);
+    let nameY = 330, msgY = 520;
+    // Photo as a framed picture on the card (top or centre)
+    if (cardPhoto && photoObj && photoObj.complete && photoObj.naturalWidth && imgPos.value !== 'background'){
+      const w = Math.min(860, 860 * (imgSize.value/100)), h = w * photoObj.naturalHeight / photoObj.naturalWidth;
+      const y = (imgPos.value === 'top') ? 200 : 380;
+      g.save(); g.shadowColor = 'rgba(0,0,0,0.4)'; g.shadowBlur = 24;
+      g.drawImage(photoObj, (1080-w)/2, y, w, Math.min(h, 420)); g.restore();
+      g.strokeStyle = gold; g.lineWidth = 5; g.strokeRect((1080-w)/2, y, w, Math.min(h, 420));
+      nameY = y + Math.min(h, 420) + 110; msgY = nameY + 150;
+    }
+    g.fillStyle = main; g.font = 'bold 72px Georgia, serif';
+    const nameEnd = wrap(g, toEl.value.trim() || 'My Dear Friend', 540, nameY, 860, 84);
+    g.font = 'italic 32px Georgia, serif'; wrap(g, currentMsg(), 540, Math.max(msgY, nameEnd + 70), 820, 46);
+    const f = fromEl.value.trim(); g.fillStyle = gold; g.font = 'bold 30px sans-serif';
+    g.fillText(f ? 'With love, ' + f : 'With love & warm wishes', 540, 940);
+    g.fillStyle = main; g.font = '24px sans-serif'; g.fillText('Merry Wish Hub', 540, 1000);
+    const a = document.createElement('a'); a.download = 'merry-christmas-card.png'; a.href = cv.toDataURL('image/png'); a.click();
+  };
+  if (cardPhoto && photoObj && !photoObj.complete){ photoObj.onload = doDraw; } else doDraw();
 }
 function wrap(g, text, x, y, maxW, lh){
   const words = text.split(' '); let line = '', yy = y;
   words.forEach(w=>{ const t = line ? line + ' ' + w : w;
     if(g.measureText(t).width > maxW && line){ g.fillText(line, x, yy); line = w; yy += lh; } else line = t; });
-  g.fillText(line, x, yy);
+  g.fillText(line, x, yy); return yy;
 }
 // Quiz
 const QUIZ = [
