@@ -21,7 +21,7 @@ a{color:inherit}
 .topbar nav a:hover{color:var(--gold2)}
 .cta{background:var(--gold);color:#3d0a0a;text-decoration:none;font-weight:800;font-size:14px;padding:10px 18px;border-radius:999px;white-space:nowrap}
 @media(max-width:760px){.topbar nav{display:none}.cta{margin-left:auto}}
-.hero{position:relative;overflow:hidden;background:radial-gradient(700px 360px at 15% 0%,rgba(232,181,74,.35) 0%,transparent 55%),radial-gradient(800px 400px at 90% 20%,rgba(255,255,255,.14) 0%,transparent 55%),linear-gradient(165deg,#5e0a0a 0%,#a4121f 45%,#c0392b 75%,#7a1010 100%);color:#fff;padding:64px 20px 56px;text-align:center}
+.hero{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(94,10,10,.68) 0%,rgba(164,18,31,.45) 55%,rgba(122,16,16,.85) 100%),url('hero.jpg') center 65%/cover no-repeat,linear-gradient(165deg,#5e0a0a,#a4121f);color:#fff;padding:64px 20px 56px;text-align:center}
 .hero:after{content:"🎄 🎁 ⭐ 🎄 🎁 ⭐ 🎄 🎁 ⭐";position:absolute;left:0;right:0;bottom:8px;text-align:center;letter-spacing:18px;font-size:20px;opacity:.28}
 .script{font-family:'Great Vibes',cursive;font-size:clamp(40px,7vw,64px);color:#f5d78e;line-height:1;margin:6px 0 0;text-shadow:0 3px 0 rgba(0,0,0,.25)}
 .orn{position:absolute;top:0;font-size:26px;opacity:.9}
@@ -74,6 +74,11 @@ input[type=text],select{width:100%;padding:13px 14px;border:1.5px solid #d8ddd5;
 .card .from{margin-top:18px;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#f5d78e}
 .card .rule{width:64px;height:2px;background:#e8b54a;margin:14px auto 4px}
 .card.vintage{background:radial-gradient(500px 260px at 50% 0%,rgba(192,57,43,.12),transparent 60%),linear-gradient(160deg,#fdf8ea,#f3e6c8 60%,#ead9ae);color:#7a1010}
+.card.starburst{background:linear-gradient(160deg,#fdf8ea,#f6ead0);color:#7a1010;border-top:16px solid #14532d;border-bottom:16px solid #14532d}
+.card.starburst .from{color:#8a6a1f}
+.card.starburst .cardimg{clip-path:polygon(50% 0%,60% 12%,75% 4%,76% 20%,93% 18%,88% 34%,100% 45%,88% 56%,95% 72%,79% 72%,76% 89%,62% 82%,50% 96%,38% 82%,24% 89%,21% 72%,5% 72%,12% 56%,0% 45%,12% 34%,7% 18%,24% 20%,25% 4%,40% 12%);border:none;border-radius:0;box-shadow:none}
+.card.snowglobe{background:radial-gradient(500px 260px at 50% 0%,rgba(255,255,255,.3),transparent 60%),linear-gradient(160deg,#123a5c,#1e6a8a 60%,#0e2c44)}
+.card.snowglobe .cardimg{border-radius:50%;aspect-ratio:1/1;object-fit:cover;border:6px solid #e8b54a}
 .card.vintage .from{color:#8a6a1f}
 .card.vintage h3{text-shadow:none}
 .card .seal{width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f5d78e,#c9a227);color:#7a1010;font-size:24px;line-height:52px;margin:16px auto 0;box-shadow:0 4px 10px rgba(0,0,0,.3);border:2px solid rgba(255,255,255,.5)}
@@ -175,13 +180,16 @@ footer a{color:var(--gold2);margin:0 10px;text-decoration:none;font-weight:600}
 <input type="text" id="toName" value="My Dear Friend" maxlength="40">
 <label for="fromName">From (your name)</label>
 <input type="text" id="fromName" placeholder="e.g. Irfan" maxlength="40">
-<label>Choose a design</label>
+<label>Template chunen (design)</label>
 <div class="themes">
-<button type="button" class="on" data-theme="classic">❤️ Classic Red &amp; Gold</button>
+<button type="button" class="on" data-theme="classic">❤️ Royal Red &amp; Gold</button>
 <button type="button" data-theme="winter">❄️ Winter Blue</button>
 <button type="button" data-theme="pine">🌲 Pine Night</button>
 <button type="button" data-theme="vintage">🕯️ Vintage Cream</button>
+<button type="button" data-theme="starburst">⭐ Starburst Photo (aap wali style)</button>
+<button type="button" data-theme="snowglobe">🔮 Snow Globe Photo</button>
 </div>
+<p class="note" style="margin:6px 0 0">Starburst aur Snow Globe templates photo ke sath sab se ache lagte hain — photo upload karen to photo star ya gol shape mein aayegi.</p>
 <label for="msg">Message</label>
 <select id="msg">
 <option>May your Christmas be full of light, laughter, and the people you love most. Merry Christmas!</option>
@@ -371,13 +379,13 @@ function downloadCard(){
     const cv = document.createElement('canvas'); cv.width = 1080; cv.height = 1080;
     const g = cv.getContext('2d');
     const grad = g.createLinearGradient(0,0,1080,1080);
-    if(theme==='winter'){ grad.addColorStop(0,'#123a5c'); grad.addColorStop(1,'#0e2c44'); }
+    if(theme==='winter' || theme==='snowglobe'){ grad.addColorStop(0,'#123a5c'); grad.addColorStop(1,'#0e2c44'); }
     else if(theme==='pine'){ grad.addColorStop(0,'#0c231c'); grad.addColorStop(1,'#1e5a41'); }
-    else if(theme==='vintage'){ grad.addColorStop(0,'#fdf8ea'); grad.addColorStop(1,'#ead9ae'); }
+    else if(theme==='vintage' || theme==='starburst'){ grad.addColorStop(0,'#fdf8ea'); grad.addColorStop(1,'#ead9ae'); }
     else { grad.addColorStop(0,'#8e1f16'); grad.addColorStop(1,'#c0392b'); }
     g.fillStyle = grad; g.fillRect(0,0,1080,1080);
-    const main = (theme==='vintage') ? '#7a1010' : '#ffffff';
-    const gold = (theme==='vintage') ? '#8a6a1f' : '#e8b54a';
+    const main = (theme==='vintage' || theme==='starburst') ? '#7a1010' : '#ffffff';
+    const gold = (theme==='vintage' || theme==='starburst') ? '#8a6a1f' : '#e8b54a';
     // Photo as background: cover + dark shade so text stays readable
     if (cardPhoto && photoObj && photoObj.complete && photoObj.naturalWidth && imgPos.value === 'background'){
       const s = Math.max(1080/photoObj.naturalWidth, 1080/photoObj.naturalHeight);
@@ -393,10 +401,22 @@ function downloadCard(){
     // Photo as a framed picture on the card (top or centre)
     if (cardPhoto && photoObj && photoObj.complete && photoObj.naturalWidth && imgPos.value !== 'background'){
       const w = Math.min(860, 860 * (imgSize.value/100)), h = w * photoObj.naturalHeight / photoObj.naturalWidth;
-      const y = (imgPos.value === 'top') ? 200 : 380;
+      const y = (imgPos.value === 'top') ? 200 : 380, hh = Math.min(h, 420), px = (1080-w)/2;
       g.save(); g.shadowColor = 'rgba(0,0,0,0.4)'; g.shadowBlur = 24;
-      g.drawImage(photoObj, (1080-w)/2, y, w, Math.min(h, 420)); g.restore();
-      g.strokeStyle = gold; g.lineWidth = 5; g.strokeRect((1080-w)/2, y, w, Math.min(h, 420));
+      if (theme === 'snowglobe'){
+        const r = Math.min(w, hh)/2, cx = 540, cy = y + hh/2;
+        g.beginPath(); g.arc(cx, cy, r, 0, 7); g.clip();
+        g.drawImage(photoObj, cx-r, cy-r, r*2, r*2);
+        g.restore(); g.save();
+        g.strokeStyle = gold; g.lineWidth = 6; g.beginPath(); g.arc(cx, cy, r, 0, 7); g.stroke(); g.restore();
+      } else if (theme === 'starburst'){
+        const pts = [[.5,0],[.6,.12],[.75,.04],[.76,.2],[.93,.18],[.88,.34],[1,.45],[.88,.56],[.95,.72],[.79,.72],[.76,.89],[.62,.82],[.5,.96],[.38,.82],[.24,.89],[.21,.72],[.05,.72],[.12,.56],[0,.45],[.12,.34],[.07,.18],[.24,.2],[.25,.04],[.4,.12]];
+        g.beginPath(); pts.forEach((p,i)=>{ const X = px + p[0]*w, Y = y + p[1]*hh; i ? g.lineTo(X,Y) : g.moveTo(X,Y); }); g.closePath(); g.clip();
+        g.drawImage(photoObj, px, y, w, hh); g.restore();
+      } else {
+        g.drawImage(photoObj, px, y, w, hh); g.restore();
+        g.strokeStyle = gold; g.lineWidth = 5; g.strokeRect(px, y, w, hh);
+      }
       nameY = y + Math.min(h, 420) + 110; msgY = nameY + 150;
     }
     g.fillStyle = main; g.font = 'bold 72px Georgia, serif';
