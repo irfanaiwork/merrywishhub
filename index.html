@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Merry Wish Hub — Christmas Cards, Quizzes & Wishes</title>
 <meta name="description" content="Make a beautiful Christmas greeting card with your name, take the Christmas character quiz, and share festive wishes on WhatsApp and Facebook.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230c231c'/%3E%3Cpolygon points='32,8 48,30 40,30 52,46 12,46 24,30 16,30' fill='%231e7a46'/%3E%3Ccircle cx='32' cy='22' r='3' fill='%23e8b54a'/%3E%3Ccircle cx='24' cy='36' r='3' fill='%23c0392b'/%3E%3Ccircle cx='40' cy='36' r='3' fill='%23e8b54a'/%3E%3Crect x='28' y='46' width='8' height='8' fill='%237a4a21'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,900&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
@@ -77,6 +78,13 @@ input[type=text],select{width:100%;padding:13px 14px;border:1.5px solid #d8ddd5;
 .gift b{font-family:Fraunces,serif;font-size:19px}
 .gift span{display:inline-block;background:#fff0ee;color:#a93226;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:800;margin-top:10px}
 footer{background:#0c231c;color:#cfe0d2;margin-top:56px;padding:34px 20px;text-align:center}
+.ice{background:linear-gradient(180deg,#dff1ff 0%,#eef8ff 45%,#f8f4e8 100%);padding:44px 20px 38px;text-align:center;position:relative;overflow:hidden}
+.ice:before,.ice:after{content:"❄";position:absolute;font-size:90px;color:rgba(120,180,220,.25)}
+.ice:before{left:4%;top:6px}.ice:after{right:5%;bottom:0}
+.ice h2{color:#123a5c}
+.ice p{color:#4a657d;font-size:17px;line-height:1.6;max-width:640px;margin:0 auto}
+.icerow{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:20px;position:relative}
+.icerow span{background:rgba(255,255,255,.85);border:1.5px solid #cfe6f5;border-radius:999px;padding:10px 16px;font-weight:700;color:#1e4a6b}
 footer a{color:var(--gold2);margin:0 10px;text-decoration:none;font-weight:600}
 .note{font-size:13px;color:#8a9a8f}
 </style>
@@ -103,6 +111,12 @@ footer a{color:var(--gold2);margin:0 10px;text-decoration:none;font-weight:600}
 <a class="btn ghost" href="#quiz">🎅 Take the Quiz</a>
 </div>
 </section>
+
+<div class="ice">
+<h2>❄️ Step Into a Winter Wonderland ❄️</h2>
+<p>Frost on the windows, snow underfoot, and warm light in every window — scroll down and make something merry to share.</p>
+<div class="icerow"><span>❄️ Falling Snow</span><span>🧊 Frosty Mornings</span><span>✨ Warm Lights</span><span>🎁 Gifts &amp; Wishes</span></div>
+</div>
 
 <div class="wrap">
 <div class="adslot">✦ Sponsored — Adsterra native banner slot
