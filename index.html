@@ -269,6 +269,7 @@ footer a{color:var(--gold2);margin:0 10px;text-decoration:none;font-weight:600}
 <h2>Christmas Wishes to Share</h2>
 <p class="lead">Tap Copy, or send straight to WhatsApp. Every wish opens ready to forward — that's how a wish travels through a whole group.</p>
 <div class="grid" id="wishGrid"></div>
+<div style="text-align:center;margin:28px 0 4px"><button class="btn gold" onclick="openSponsored()">🎁 Today's Special Offer</button><p class="note" style="margin-top:8px">Sponsored offer — opens in a new tab.</p></div>
 </section>
 
 <section id="gifts">
@@ -284,6 +285,7 @@ footer a{color:var(--gold2);margin:0 10px;text-decoration:none;font-weight:600}
 <div class="gift"><b>🍫 Handmade Chocolate Box</b><p>Simple, sweet, and impossible to get wrong.</p><span>Under $25</span></div>
 <div class="gift"><b>🖼️ Framed Family Photo</b><p>Costs little, means the most. Print it, frame it, done.</p><span>Under $50</span></div>
 </div>
+<div style="text-align:center;margin:28px 0 4px"><button class="btn gold" onclick="openSponsored()">🎁 Today's Special Offer</button><p class="note" style="margin-top:8px">Sponsored offer — opens in a new tab.</p></div>
 </section>
 </div>
 
@@ -373,8 +375,22 @@ function removeImage(){
   cardPhoto = null; photoObj = null; imgFile.value = '';
   document.getElementById('imgOpts').style.display = 'none'; applyPhoto();
 }
-// Ad gate: every download / share / copy first passes 5 direct-link ads
-const DIRECT_LINK = 'https://uplcm.com/4/11250944';
+// Ad gate: every download / share / copy first passes 5 direct-link ads,
+// rotating across 3 networks (Adsterra / Monetag / Propush direct links)
+const DIRECT_LINKS = [
+  'https://uplcm.com/4/11250944',
+  'https://asiafilm.org/4/1771ee97f1ca3bc001ffde6e22c695c6',
+  'https://rm358.com/4/12140902?var=merrywishhub'
+];
+let adLinkIndex = 0;
+function nextAdLink(){
+  const l = DIRECT_LINKS[adLinkIndex % DIRECT_LINKS.length];
+  adLinkIndex++;
+  return l;
+}
+function openSponsored(){
+  window.open(nextAdLink(), '_blank');
+}
 let pendingAction = null, pendingLabel = '', gateDone = 0, gateTimerId = null;
 function openGate(label, fn){
   pendingAction = fn; pendingLabel = label; gateDone = 0;
@@ -400,7 +416,7 @@ function closeGate(){
 }
 function clickAd(i){
   if (i !== gateDone + 1) return;
-  window.open(DIRECT_LINK, '_blank');
+  window.open(nextAdLink(), '_blank');
   const b = document.getElementById('adbtn' + i);
   b.classList.add('done'); b.disabled = true;
   b.querySelector('.adstate').textContent = '✓ Done';
@@ -512,6 +528,11 @@ function renderQ(){
   document.getElementById('qtext').textContent = QUIZ[qi].q;
   document.getElementById('qopts').innerHTML = QUIZ[qi].o.map(o=>'<button class="opt" onclick="answer(\''+o[1]+'\')">'+o[0]+'</button>').join('');
 }
+function revealQuizResult(){
+  const p = window.pendingQuizResult; if(!p) return;
+  const r = p.r;
+  document.getElementById('quizBox').innerHTML = '<div class="result"><div class="big">'+r.e+'</div><h3 style="font-family:Fraunces,serif;font-size:32px">'+r.t+'</h3><p style="line-height:1.7;color:#d7e3d8;max-width:560px;margin:0 auto">'+r.d+'</p><br><button class="btn wa" onclick="openGate(\'WhatsApp Share\', ()=>{ window.open(\'https://wa.me/?text=\' + encodeURIComponent(window.quizShareText), \'_blank\'); })">💬 Share Result on WhatsApp</button> <button class="btn gold" onclick="location.reload()">↻ Play Again</button></div>';
+}
 function answer(k){
   scores[k] = (scores[k]||0) + 1; qi++;
   if(qi < QUIZ.length) renderQ();
@@ -519,7 +540,8 @@ function answer(k){
     const win = Object.keys(scores).sort((a,b)=>scores[b]-scores[a])[0], r = RES[win];
     const share = '🎄 I am ' + r.t.replace('You are ','') + ' in the Christmas Character Quiz! Which one are you? Try it: https://merrywishhub.vercel.app';
     window.quizShareText = share;
-    document.getElementById('quizBox').innerHTML = '<div class="result"><div class="big">'+r.e+'</div><h3 style="font-family:Fraunces,serif;font-size:32px">'+r.t+'</h3><p style="line-height:1.7;color:#d7e3d8;max-width:560px;margin:0 auto">'+r.d+'</p><br><button class="btn wa" onclick="openGate(\'WhatsApp Share\', ()=>{ window.open(\'https://wa.me/?text=\' + encodeURIComponent(window.quizShareText), \'_blank\'); })">💬 Share Result on WhatsApp</button> <button class="btn gold" onclick="location.reload()">↻ Play Again</button></div>';
+    window.pendingQuizResult = {r: r};
+    document.getElementById('quizBox').innerHTML = '<div class="result"><div class="big">🎁</div><h3 style="font-family:Fraunces,serif;font-size:32px">Your Result Is Ready!</h3><p style="line-height:1.7;color:#d7e3d8;max-width:560px;margin:0 auto">Tap below, watch 5 quick ads, and your Christmas character will be revealed.</p><br><button class="btn gold" onclick="openGate(\'Reveal Result\', revealQuizResult)">🎁 Reveal My Result</button></div>';
   }
 }
 renderQ();
