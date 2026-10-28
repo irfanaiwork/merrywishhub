@@ -384,8 +384,13 @@ const DIRECT_LINKS = [
 ];
 let adLinkIndex = 0;
 function nextAdLink(){
-  const l = DIRECT_LINKS[adLinkIndex % DIRECT_LINKS.length];
+  let l = DIRECT_LINKS[adLinkIndex % DIRECT_LINKS.length];
   adLinkIndex++;
+  // rm358 link: ymid must be a unique click ID per click. A static site cannot
+  // fill the {your_clickid_here} macro, so generate one in JS for every click.
+  if (l.indexOf('rm358.com') !== -1){
+    l += '&ymid=' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+  }
   return l;
 }
 function openSponsored(){
